@@ -26,7 +26,7 @@
         "parameters": {
           "source": { "value": "[parameters('networkSecurityGroupsSettings').securityRules]" },
           "transformTemplateUri": { "value": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/transform.json')]" },
-          "version": "[parameters('version')]"
+          "version": { "value": "[parameters('version')]" }
         }
       }
     },
