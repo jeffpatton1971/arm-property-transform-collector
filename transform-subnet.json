@@ -1,0 +1,57 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "source": {
+      "type": "object"
+    },
+    "state": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "BuildUri": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "BuildTemplateUri": "[concat(parameters('BuildUri'),'/subnet.json')]"
+  },
+  "resources": [
+    {
+      "name": "BuildSubnet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('BuildTemplateUri')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "Name": {
+            "value": "[parameters('source').name]"
+          },
+          "Addressprefix": {
+            "value": "[parameters('source').Addressprefix]"
+          },
+          "NetworkSecurityGroupId": {
+            "value": "[parameters('source').NetworkSecurityGroupId]"
+          },
+          "RouteTableId": {
+            "value": ""
+          },
+          "ServiceEndpointId": {
+            "value": []
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "collection": {
+      "type": "array",
+      "value": "[concat(parameters('state'), createArray(reference('BuildSubnet').outputs.subnet.value))]"
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "networkSecurityGroupsSettings": {
+    "virtualNetwork": {
       "type": "object"
     },
     "BuildUri": {
@@ -34,10 +34,10 @@
         },
         "parameters": {
           "source": {
-            "value": "[parameters('networkSecurityGroupsSettings').securityRules]"
+            "value": "[parameters('virtualNetwork').subnets]"
           },
           "transformTemplateUri": {
-            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-securityRules.json')]"
+            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-subnet.json')]"
           },
           "BuildUri": {
             "value": "[parameters('BuildUri')]"
@@ -46,21 +46,24 @@
       }
     },
     {
-      "name": "BuildNetworkSecurityGroup",
+      "name": "BuildVirtualNetwork",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
       "dependsOn": [],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/networkSecurityGroups.json')]",
+          "uri": "[concat(parameters('BuildUri'),'/virtualNetworks.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
           "Name": {
-            "value": "[concat(parameters('networkSecurityGroupsSettings').name,'-nsg')]"
+            "value": "[parameters('virtualNetwork').name]"
           },
-          "SecurityRules": {
+          "addressSpace": {
+            "value": "[parameters('virtualNetwork').addressPrefix]"
+          },
+          "subnets": {
             "value": "[reference('collector').outputs.result.value]"
           },
           "DependsOn": {
@@ -78,7 +81,7 @@
         "contentVersion": "1.0.0.0",
         "parameters": {},
         "variables": {},
-        "resources": "[createArray(reference('BuildNetworkSecurityGroup').outputs.networkSecurityGroups.value)]",
+        "resources": "[createArray(reference('BuildVirtualNetwork').outputs.virtualNetworks.value)]",
         "outputs": {}
       }
     }

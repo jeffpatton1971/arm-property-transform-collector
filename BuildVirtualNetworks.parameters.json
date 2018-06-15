@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetwork": {
+      "value": {
+        "name": "sample-vnet",
+        "addressPrefix": [ "10.0.0.0/8" ],
+        "subnets": [
+          {
+            "Name": "dmz",
+            "Addressprefix": "10.0.1.0/16",
+            "NetworkSecurityGroupId": ""
+          },
+          {
+            "Name": "app",
+            "Addressprefix": "10.0.1.0/16",
+            "NetworkSecurityGroupId": ""
+          }
+        ]
+      }
+    },
+    "BuildUri": {
+      "value": "https://raw.githubusercontent.com/ArmReference/network-virtualNetworks/build"
+    },
+    "url": {
+      "value": "https://raw.githubusercontent.com/jeffpatton1971"
+    },
+    "path": {
+      "value": "arm-property-transform-collector"
+    },
+    "version": {
+      "value": "virtualNetworks"
+    }
+  }
+}
