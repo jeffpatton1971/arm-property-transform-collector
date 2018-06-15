@@ -7,7 +7,7 @@
     }
   },
   "variables": {
-    "collectorTemplateUri": "[uri(deployment().properties.templateLink.uri, 'collector.template.json')]"
+    "collectorTemplateUri": "https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/master/collector.template.json"
   },
   "resources": [
     {
@@ -22,7 +22,7 @@
         },
         "parameters": {
           "source": { "value": "[parameters('networkSecurityGroupsSettings').securityRules]" },
-          "transformTemplateUri": { "value": "[uri(deployment().properties.templateLink.uri, 'transform.json')]" }
+          "transformTemplateUri": { "value": "https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/master/transform.json" }
         }
       }
     },
