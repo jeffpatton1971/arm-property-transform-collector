@@ -36,6 +36,12 @@
           "transformTemplateUri": {
             "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform.json')]"
           },
+          "url": {
+            "value": "[parameters('url')]"
+          },
+          "path": {
+            "value": "[parameters('path')]"
+          },
           "version": {
             "value": "[parameters('version')]"
           }
