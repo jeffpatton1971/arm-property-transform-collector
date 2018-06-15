@@ -76,7 +76,7 @@
   "outputs": {
     "collection": {
       "type": "array",
-      "value": "[concat(parameters('state'), createArray(reference('BuildSecurityRule').outputs.securityRules.value))]"
+      "value": "[concat(parameters('state'), reference('BuildSecurityRule').outputs.securityRules.value)]"
     }
   }
 }
