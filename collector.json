@@ -5,21 +5,15 @@
     "source": {
       "type": "array"
     },
+    "BuildUri": {
+      "type": "string"
+    },
     "transformTemplateUri": {
       "type": "string"
     },
     "state": {
       "type": "array",
       "defaultValue": []
-    },
-    "url": {
-      "type": "string"
-    },
-    "path": {
-      "type": "string"
-    },
-    "version": {
-      "type": "string"
     }
   },
   "variables": {
