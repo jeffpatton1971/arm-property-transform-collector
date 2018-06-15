@@ -24,9 +24,15 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "source": { "value": "[parameters('networkSecurityGroupsSettings').securityRules]" },
-          "transformTemplateUri": { "value": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/transform.json')]" },
-          "version": { "value": "[parameters('version')]" }
+          "source": {
+            "value": "[parameters('networkSecurityGroupsSettings').securityRules]"
+          },
+          "transformTemplateUri": {
+            "value": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/transform.json')]"
+          },
+          "version": {
+            "value": "[parameters('version')]"
+          }
         }
       }
     },
