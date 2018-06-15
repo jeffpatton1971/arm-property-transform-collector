@@ -7,6 +7,9 @@
     "state": {
       "type": "array",
       "defaultValue": []
+    },
+    "version": {
+      "type": "string"
     }
   },
   "variables": {
@@ -52,7 +55,10 @@
         "templateLink": { "uri": "[parameters('transformTemplateUri')]" },
         "parameters": {
           "source": { "value": "[parameters('source')[copyindex()]]" },
-          "state": { "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]" }
+          "state": { "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]" },
+          "version": {
+            "value": "[parameters('version')]"
+          }
         }
       }
     }
