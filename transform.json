@@ -79,7 +79,7 @@
   "outputs": {
     "collection": {
       "type": "array",
-      "value": "[concat(parameters('state'), reference('BuildSecurityRule').outputs.securityRule)]"
+      "value": "[concat(parameters('state'), reference('BuildSecurityRule').outputs.securityRule.value)]"
     }
   }
 }
