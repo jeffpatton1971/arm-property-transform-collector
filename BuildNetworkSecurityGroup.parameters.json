@@ -34,7 +34,7 @@
       }
     },
     "BuildUri": {
-      "value": "https://raw.githubusercontent.com/ArmReference/network-networkSecurityGroups/master"
+      "value": "https://raw.githubusercontent.com/ArmReference/network-networkSecurityGroups/build"
     },
     "url": {
       "value": "https://raw.githubusercontent.com/jeffpatton1971"
