@@ -5,12 +5,18 @@
     "networkSecurityGroupsSettings": {
       "type": "object"
     },
+    "url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
     "version": {
       "type": "string"
     }
   },
   "variables": {
-    "collectorTemplateUri": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/collector.template.json')]"
+    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/collector.json')]"
   },
   "resources": [
     {
@@ -24,9 +30,15 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "source": { "value": "[parameters('networkSecurityGroupsSettings').securityRules]" },
-          "transformTemplateUri": { "value": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/transform.json')]" },
-          "version": { "value": "[parameters('version')]" }
+          "source": {
+            "value": "[parameters('networkSecurityGroupsSettings').securityRules]"
+          },
+          "transformTemplateUri": {
+            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform.json')]"
+          },
+          "version": {
+            "value": "[parameters('version')]"
+          }
         }
       }
     },
@@ -38,7 +50,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/networkSecurityGroups.json')]",
+          "uri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/networkSecurityGroups.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
