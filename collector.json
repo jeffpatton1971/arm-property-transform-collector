@@ -12,6 +12,12 @@
       "type": "array",
       "defaultValue": []
     },
+    "url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
     "version": {
       "type": "string"
     }
@@ -65,6 +71,12 @@
           },
           "state": {
             "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]"
+          },
+          "url": {
+            "value": "[parameters('url')]"
+          },
+          "path": {
+            "value": "[parameters('path')]"
           },
           "version": {
             "value": "[parameters('version')]"
