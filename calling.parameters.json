@@ -33,6 +33,12 @@
         ]
       }
     },
+    "url": {
+      "value": "https://raw.githubusercontent.com/jeffpatton1971"
+    },
+    "path": {
+      "value": "arm-property-transform-collector"
+    },
     "version": {
       "value": "v3"
     }
