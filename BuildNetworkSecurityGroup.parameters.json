@@ -34,7 +34,7 @@
       }
     },
     "BuildUri": {
-      "value": "https://armreference.blob.core.windows.net/build/Microsoft.Network/networkSecurityGroups"
+      "value": "https://raw.githubusercontent.com/ArmReference/network-networkSecurityGroups/master"
     },
     "url": {
       "value": "https://raw.githubusercontent.com/jeffpatton1971"
@@ -43,7 +43,7 @@
       "value": "arm-property-transform-collector"
     },
     "version": {
-      "value": "master"
+      "value": "networkSecurityGroups"
     }
   }
 }
