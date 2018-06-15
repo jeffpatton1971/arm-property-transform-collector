@@ -27,20 +27,41 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "networkSecurityGroup1",
-      "location": "[resourceGroup().location]",
+      "name": "BuildNetworkSecurityGroup",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
       "properties": {
-        "securityRules": "[reference('collector').outputs.result.value]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/master/networkSecurityGroups.json",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "Name": {
+            "value": "[concat(parameters('networkSecurityGroupsSettings').name,'-nsg')]"
+          },
+          "SecurityRules": {
+            "value": "[reference('collector').outputs.result.value]"
+          },
+          "DependsOn": {
+            "value": []
+          }
+        }
       }
     }
   ],
   "outputs": {
-    "instance": {
-      "type": "array",
-      "value": "[reference('collector').outputs.result.value]"
+    "armTemplate": {
+      "type": "object",
+      "value": {
+        "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {},
+        "variables": {},
+        "resources": "[createArray(reference('BuildNetworkSecurityGroup').outputs.networkSecurityGroups.value)]",
+        "outputs": {}
+      }
     }
-
   }
 }

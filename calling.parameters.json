@@ -4,6 +4,7 @@
   "parameters": {
     "networkSecurityGroupsSettings": {
       "value": {
+        "name": "sample-subnet",
         "securityRules": [
           {
             "name": "RDPAllow",
