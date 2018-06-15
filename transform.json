@@ -9,11 +9,19 @@
       "type": "array",
       "defaultValue": []
     },
+    "url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
     "version": {
       "type": "string"
     }
   },
-  "variables": {},
+  "variables": {
+    "securityRulesUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/securityRules.json')]"
+  },
   "resources": [
     {
       "name": "BuildSecurityRule",
@@ -23,7 +31,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/securityRules.json')]",
+          "uri": "[variables('securityRulesUri')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
