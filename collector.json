@@ -66,14 +66,8 @@
           "state": {
             "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]"
           },
-          "url": {
-            "value": "[parameters('url')]"
-          },
-          "path": {
-            "value": "[parameters('path')]"
-          },
-          "version": {
-            "value": "[parameters('version')]"
+          "BuildUri": {
+            "value": "[parameters('BuildUri')]"
           }
         }
       }
