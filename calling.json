@@ -10,7 +10,7 @@
     }
   },
   "variables": {
-    "collectorTemplateUri": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/collector.template.json')]"
+    "collectorTemplateUri": "[concat('https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/',parameters('version'),'/collector.json')]"
   },
   "resources": [
     {
