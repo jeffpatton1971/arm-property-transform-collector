@@ -26,57 +26,11 @@
       }
     ]
   },
-  "resources": [
-    {
-      "name": "BuildSecurityRule",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2016-09-01",
-      "dependsOn": [],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/master/securityRules.json",
-          "contentVersion": "2017.09.01.0"
-        },
-        "parameters": {
-          "Name": {
-            "value": "[parameters('source').name]"
-          },
-          "Description": {
-            "value": "[parameters('source').description]"
-          },
-          "access": {
-            "value": "[parameters('source').access]"
-          },
-          "destinationAddressPrefix": {
-            "value": "[parameters('source').destinationAddressPrefix]"
-          },
-          "destinationPortRange": {
-            "value": "[parameters('source').destinationPortRange]"
-          },
-          "direction": {
-            "value": "[parameters('source').direction]"
-          },
-          "priority": {
-            "value": "[parameters('source').priority]"
-          },
-          "protocol": {
-            "value": "[parameters('source').protocol]"
-          },
-          "sourceAddressPrefix": {
-            "value": "[parameters('source').sourceAddressPrefix]"
-          },
-          "sourcePortRange": {
-            "value": "[parameters('source').sourcePortRange]"
-          }
-        }
-      }
-    }
-  ],
+  "resources": [],
   "outputs": {
     "collection": {
       "type": "array",
-      "value": "[concat(parameters('state'), reference('BuildSecurityRule').outputs.securityRules.value)]"
+      "value": "[concat(parameters('state'), variables('instance'))]"
     }
   }
 }
