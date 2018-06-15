@@ -39,7 +39,7 @@
   "outputs": {
     "instance": {
       "type": "array",
-      "value": "[reference('firstResource').outputs.result.value]"
+      "value": "[reference('collector').outputs.result.value]"
     }
 
   }
