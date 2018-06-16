@@ -1,0 +1,463 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachine": {
+      "type": "object"
+    },
+    "BuildUri": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/collector.json')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "name": "DataDiskReferenceCollector",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('collectorTemplateUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "source": {
+            "value": "[parameters('virtualMachine').dataDisks]"
+          },
+          "transformTemplateUri": {
+            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-dataDisksReference.json')]"
+          },
+          "BuildUri": {
+            "value": "[parameters('BuildUri')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "DataDiskCollector",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('collectorTemplateUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "source": {
+            "value": "[parameters('virtualMachine').dataDisks]"
+          },
+          "transformTemplateUri": {
+            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-dataDisks.json')]"
+          },
+          "BuildUri": {
+            "value": "[parameters('BuildUri')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildOsDisk",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('disksUri'), '/disks.json', parameters('SasToken'))]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('virtualMachine').osDisk.name]"
+          },
+          "createOption": {
+            "value": "Empty"
+          },
+          "diskSizeGB": {
+            "value": "[variables('osDisk').size]"
+          },
+          "sku": {
+            "value": "[variables('osDisk').sku]"
+          },
+          "tags": {
+            "value": "[json('{\"TagName\": \"TagValue\"}')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildOsDiskReference",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildOsDiskReference')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('computeUri'), '/osDisk.json', parameters('SasToken'))]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('virtualMachine').osDisk.name]"
+          },
+          "caching": {
+            "value": "ReadOnly"
+          },
+          "createOption": {
+            "value": "FromImage"
+          },
+          "ManagedDiskId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Compute/disks',parameters('virtualMachine').osDisk.name)]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildImageReference",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/imageReference.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "id": {
+            "value": "parameters('virtualMachine').imageReferenceId"
+          },
+          "publisher": {
+            "value": "[concat(variables('OS')[parameters('virtualMachine').operatingSystem].imagePublisher)]"
+          },
+          "offer": {
+            "value": "[concat(variables('OS')[parameters('virtualMachine').operatingSystem].imageOffer)]"
+          },
+          "sku": {
+            "value": "[concat(variables('OS')[parameters('virtualMachine').operatingSystem].imageSku)]"
+          },
+          "version": {
+            "value": "[concat(variables('OS')[parameters('virtualMachine').operatingSystem].version)]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildStorageProfile",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildImageReference')]",
+        "[concat('Microsoft.Resources/deployments/','BuildOsDiskReference')]",
+        "[concat('Microsoft.Resources/deployments/','BuildDataDisk')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/storageProfile.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "imageReference": {
+            "value": "[reference('BuildImageReference').outputs.imageReference.value]"
+          },
+          "osDisk": {
+            "value": "[reference('BuildOsDisk').outputs.osDisk.value]"
+          },
+          "dataDisks": {
+            "value": "[reference('DataDiskReferenceCollector').outputs.result.value]"
+          }
+        }
+      }
+    },
+    {
+      "name": "DefineWindowsConfiguration",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/windowsConfiguration.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "provisionVMAgent": {
+            "value": true
+          },
+          "winRM": {
+            "value": {}
+          },
+          "additionalUnattendContent": {
+            "value": {}
+          },
+          "enableAutomaticUpdates": {
+            "value": true
+          },
+          "timeZone": {
+            "value": "[variables('timeZone')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildOsProfile",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','DefineWindowsConfiguration')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/osProfile.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "computerName": {
+            "value": "[parameters('virtualMachine').name]"
+          },
+          "adminUsername": {
+            "value": "[variables('AdminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[variables('AdminPassword')]"
+          },
+          "customData": {
+            "value": ""
+          },
+          "windowsConfiguration": {
+            "value": "[reference('DefineWindowsConfiguration').outputs.windowsConfiguration.value]"
+          },
+          "linuxConfiguration": {
+            "value": {}
+          },
+          "secrets": {
+            "value": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildIpConfigurations",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/ipConfigurations.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[concat(variables('interfaceName'),'ipc')]"
+          },
+          "subnet": {
+            "value": "[variables('subnetId')]"
+          }
+        }
+      }
+    },
+
+    {
+      "name": "BuildNetworkInterface",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildIpConfigurations')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/networkInterfaces.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[variables('interfaceName')]"
+          },
+          "ipConfigurations": {
+            "value": "[createarray(reference('BuildIpConfigurations').outputs.ipConfigurations.value)]"
+          },
+          "tags": {
+            "value": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildNetworkInterfaceId",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildNetworkInterface')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/networkInterfaces.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "id": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',variables('interfaceName'))]"
+          },
+          "primary": {
+            "value": true
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildNetworkProfile",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildNetworkInterfaceId')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/networkProfile.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "networkInterfaces": {
+            "value": "[createarray(reference('DeployNetworkInterface').outputs.networkInterfaces.value)]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildAvailabilitySet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/availabilitySets.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('virtualMachine').availabilitySet]"
+          },
+          "skuName": {
+            "value": "Aligned"
+          },
+          "tags": {
+            "value": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildProperties",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildAvailabilitySet')]",
+        "[concat('Microsoft.Resources/deployments/','BuildNetworkProfile')]",
+        "[concat('Microsoft.Resources/deployments/','BuildOsProfile')]",
+        "[concat('Microsoft.Resources/deployments/','BuildStorageProfile')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/properties.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "licenseType": {
+            "value": ""
+          },
+          "availabilitySet": {
+            "value": {
+              "id": {
+                "value": "[resourceId(resourceGroup().name,'Microsoft.Compute/availabilitySets',parameters('virtualMachine').availabilitySet)]"
+              }
+            }
+          },
+          "hardwareProfile": {
+            "value": {
+              "vmSize": {
+                "value": "[variables('vmSize')]"
+              }
+            }
+          },
+          "storageProfile": {
+            "value": "[reference('BuildStorageProfile').outputs.storageProfile.value]"
+          },
+          "osProfile": {
+            "value": "[reference('BuildOsProfile').outputs.osProfile.value]"
+          },
+          "networkProfile": {
+            "value": "[reference('BuildNetworkProfile').outputs.networkProfile.value]"
+          },
+          "diagnosticsProfile": {
+            "value": "[reference('BuildDiagnosticsProfile').outputs.diagnosticsProfile.value]"
+          }
+        }
+      }
+    },
+    {
+      "name": "BuildVirtualMachine",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildProperties')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('BuildUri'),'/virtualMachines.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('virtualMachine').name]"
+          },
+          "tags": {
+            "value": "[json('{\"TagName\": \"TagValue\"}')]"
+          },
+          "plan": {
+            "value": {}
+          },
+          "properties": {
+            "value": "[reference('BuildProperties').outputs.properties.value]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "armTemplate": {
+      "type": "object",
+      "value": {
+        "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {},
+        "variables": {},
+        "resources": "[createArray(reference('BuildAvailabilitySet').outputs.availabilitySet.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value,reference('DataDiskCollector').outputs.result.value,reference('BuildVirtualMachine').outputs.virtualMachines.value)]",
+        "outputs": {}
+      }
+    }
+  }
+}

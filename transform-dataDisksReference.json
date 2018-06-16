@@ -18,31 +18,31 @@
   },
   "resources": [
     {
-      "name": "BuildSubnet",
+      "name": "BuildDataDisk",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
       "dependsOn": [],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('BuildTemplateUri')]",
+          "uri": "[concat(variables('disksUri'), '/disks.json', parameters('SasToken'))]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
-          "Name": {
+          "name": {
             "value": "[parameters('source').name]"
           },
-          "Addressprefix": {
-            "value": "[parameters('source').Addressprefix]"
+          "createOption": {
+            "value": "Empty"
           },
-          "NetworkSecurityGroupId": {
-            "value": "[parameters('source').NetworkSecurityGroupId]"
+          "diskSizeGB": {
+            "value": "[variables('disk').size]"
           },
-          "RouteTableId": {
-            "value": ""
+          "sku": {
+            "value": "[variables('disk').sku]"
           },
-          "ServiceEndpointId": {
-            "value": []
+          "tags": {
+            "value": {}
           }
         }
       }
@@ -51,7 +51,7 @@
   "outputs": {
     "collection": {
       "type": "array",
-      "value": "[concat(parameters('state'), createArray(reference('BuildSubnet').outputs.subnet.value))]"
+      "value": "[concat(parameters('state'), createArray(reference('BuildDataDisk').outputs.disks.value))]"
     }
   }
 }

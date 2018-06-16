@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachine": {
+      "value": [
+        {
+          "name": "qafmssql2",
+          "ResourceGroup": "eus-qa-fmssql",
+          "vmSize": "DS13_v2",
+          "operatingSystem": "Windows Server 2016",
+          "availabilitySet": "qa-fmssql-avset",
+          "subnet": "azure-qafmsinside",
+          "osDisk": {
+            "name": "qafmssql2-os.vhd",
+            "size": "p10"
+          },
+          "dataDisks": [
+            {
+              "name": "qafmssql2-datadisk-001.vhd",
+              "lun": 0,
+              "size": "p30"
+            },
+            {
+              "name": "qafmssql2-datadisk-002.vhd",
+              "lun": 0,
+              "size": "p30"
+            }
+          ]
+        },
+        {
+          "name": "qafmssqlw",
+          "ResourceGroup": "eus-qa-fmssql",
+          "vmSize": "F1",
+          "operatingSystem": "Windows Server 2016",
+          "availabilitySet": "qafmssqlw-avset",
+          "subnet": "azure-qafmsinside",
+          "osDisk": {
+            "name": "qafmssqlw-os.vhd",
+            "size": "P10"
+          }
+        }
+      ]
+    },
+    "BuildUri": {
+      "value": "https://raw.githubusercontent.com/ArmReference/network-virtualNetworks/build"
+    },
+    "url": {
+      "value": "https://raw.githubusercontent.com/jeffpatton1971"
+    },
+    "path": {
+      "value": "arm-property-transform-collector"
+    },
+    "version": {
+      "value": "virtualMachines"
+    }
+  }
+}

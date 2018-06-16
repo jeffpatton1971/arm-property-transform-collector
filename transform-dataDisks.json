@@ -1,0 +1,62 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "source": {
+      "type": "object"
+    },
+    "state": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "BuildUri": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "BuildTemplateUri": "[concat(parameters('BuildUri'),'/subnet.json')]"
+  },
+  "resources": [
+    {
+      "name": "BuildDataDisk",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','CreateDataDisk')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('computeUri'), '/dataDisks.json', parameters('SasToken'))]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('source').name]"
+          },
+          "diskSizeGB": {
+            "value": "[variables('size')]"
+          },
+          "caching": {
+            "value": "ReadOnly"
+          },
+          "lun": {
+            "value": "parameters('source').lun"
+          },
+          "ManagedDiskId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Compute/disks',parameters('source').name)]"
+          },
+          "createOption": {
+            "value": "Attach"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "collection": {
+      "type": "array",
+      "value": "[concat(parameters('state'), createArray(reference('BuildDataDisk').outputs.dataDisks.value))]"
+    }
+  }
+}
