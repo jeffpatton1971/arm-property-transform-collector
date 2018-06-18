@@ -569,6 +569,9 @@
           },
           "properties": {
             "value": "[reference('BuildProperties').outputs.properties.value]"
+          },
+          "resources": {
+            "value": "[reference('DataDiskCollector').outputs.result.value]"
           }
         }
       }
@@ -582,7 +585,7 @@
         "contentVersion": "1.0.0.0",
         "parameters": {},
         "variables": {},
-        "resources": "[createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value,reference('DataDiskCollector').outputs.result.value,reference('BuildVirtualMachine').outputs.virtualMachine.value)]",
+        "resources": "[createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value,reference('BuildVirtualMachine').outputs.virtualMachine.value)]",
         "outputs": {}
       }
     }
