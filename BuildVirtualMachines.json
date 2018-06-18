@@ -462,7 +462,7 @@
         },
         "parameters": {
           "networkInterfaces": {
-            "value": "[createarray(reference('DeployNetworkInterface').outputs.networkInterfaces.value)]"
+            "value": "[createarray(reference('BuildNetworkInterface').outputs.networkInterfaces.value)]"
           }
         }
       }
@@ -535,7 +535,7 @@
             "value": "[reference('BuildNetworkProfile').outputs.networkProfile.value]"
           },
           "diagnosticsProfile": {
-            "value": "[reference('BuildDiagnosticsProfile').outputs.diagnosticsProfile.value]"
+            "value": {}
           }
         }
       }
