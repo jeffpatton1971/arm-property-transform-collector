@@ -3,44 +3,30 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "virtualMachine": {
-      "value": [
-        {
-          "name": "qafmssql2",
-          "ResourceGroup": "eus-qa-fmssql",
-          "vmSize": "DS13_v2",
-          "operatingSystem": "Windows Server 2016",
-          "availabilitySet": "qa-fmssql-avset",
-          "subnet": "eus-vnet01,azure-qafmsinside",
-          "osDisk": {
-            "name": "qafmssql2-os.vhd",
-            "size": "p10"
-          },
-          "dataDisks": [
-            {
-              "name": "qafmssql2-datadisk-001.vhd",
-              "lun": 0,
-              "size": "p30"
-            },
-            {
-              "name": "qafmssql2-datadisk-002.vhd",
-              "lun": 0,
-              "size": "p30"
-            }
-          ]
+      "value": {
+        "name": "qafmssql2",
+        "ResourceGroup": "eus-qa-fmssql",
+        "vmSize": "DS13_v2",
+        "operatingSystem": "Windows Server 2016",
+        "availabilitySet": "qa-fmssql-avset",
+        "subnet": "eus-vnet01,azure-qafmsinside",
+        "osDisk": {
+          "name": "qafmssql2-os.vhd",
+          "size": "p10"
         },
-        {
-          "name": "qafmssqlw",
-          "ResourceGroup": "eus-qa-fmssql",
-          "vmSize": "F1",
-          "operatingSystem": "Windows Server 2016",
-          "availabilitySet": "qafmssqlw-avset",
-          "subnet": "eus-vnet01,azure-qafmsinside",
-          "osDisk": {
-            "name": "qafmssqlw-os.vhd",
-            "size": "P10"
+        "dataDisks": [
+          {
+            "name": "qafmssql2-datadisk-001.vhd",
+            "lun": 0,
+            "size": "p30"
+          },
+          {
+            "name": "qafmssql2-datadisk-002.vhd",
+            "lun": 0,
+            "size": "p30"
           }
-        }
-      ]
+        ]
+      }
     },
     "BuildUri": {
       "value": "https://raw.githubusercontent.com/ArmReference"

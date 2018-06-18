@@ -136,7 +136,7 @@
         "timezone": "Pacific Standard Time"
       }
     },
-    "vmSize": "[concat('Standard_',parameters('virtualMachine').Size)]",
+    "vmSize": "[concat('Standard_',parameters('virtualMachine').vmSize)]",
     "netArray": "[split(parameters('virtualMachine').subnet,',')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('netArray')[0])]",
     "subnetId": "[concat(variables('vnetID'),'/subnets/',variables('netArray')[1])]",
