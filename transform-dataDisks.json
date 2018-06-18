@@ -102,10 +102,10 @@
             "value": "Empty"
           },
           "diskSizeGB": {
-            "value": "[variables('Disk').size]"
+            "value": "[variables('Disk')[parameters('source').size].size]"
           },
           "sku": {
-            "value": "[variables('Disk').sku]"
+            "value": "[variables('Disk')[parameters('source').size].sku]"
           },
           "tags": {
             "value": {}

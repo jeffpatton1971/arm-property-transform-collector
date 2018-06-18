@@ -99,7 +99,7 @@
             "value": "[parameters('source').name]"
           },
           "diskSizeGB": {
-            "value": "[variables('Disk').size]"
+            "value": "[variables('Disk')[parameters('source').size].size]"
           },
           "caching": {
             "value": "ReadOnly"
