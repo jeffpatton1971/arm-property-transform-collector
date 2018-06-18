@@ -23,7 +23,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "[concat(resourceGroup().name,'-loop-0')]",
+      "name": "[concat('loop-0')]",
       "properties": {
         "mode": "Incremental",
         "parameters": {},
@@ -45,14 +45,14 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "[concat(resourceGroup().name,'-loop-', copyindex(1))]",
+      "name": "[concat('loop-', copyindex(1))]",
       "copy": {
         "name": "iterator",
         "count": "[variables('count')]",
         "mode": "serial"
       },
       "dependsOn": [
-        "[concat(resourceGroup().name,'-loop-0')]"
+        "loop-0"
       ],
       "properties": {
         "mode": "Incremental",
@@ -64,7 +64,7 @@
             "value": "[parameters('source')[copyindex()]]"
           },
           "state": {
-            "value": "[reference(concat(resourceGroup().name,'-loop-', copyindex())).outputs.collection.value]"
+            "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]"
           },
           "BuildUri": {
             "value": "[parameters('BuildUri')]"
@@ -76,7 +76,7 @@
   "outputs": {
     "result": {
       "type": "array",
-      "value": "[reference(concat(resourceGroup().name,'-loop-', variables('count'))).outputs.collection.value]"
+      "value": "[reference(concat('loop-', variables('count'))).outputs.collection.value]"
     }
   }
 }
