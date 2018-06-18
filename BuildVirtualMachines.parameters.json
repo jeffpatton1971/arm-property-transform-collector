@@ -8,6 +8,7 @@
         "ResourceGroup": "eus-qa-fmssql",
         "vmSize": "DS13_v2",
         "operatingSystem": "Windows Server 2016 DataCenter",
+        "imageReferenceId": null,
         "availabilitySet": "qa-fmssql-avset",
         "subnet": "eus-vnet01,azure-qafmsinside",
         "osDisk": {
