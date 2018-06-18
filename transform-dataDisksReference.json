@@ -105,7 +105,7 @@
             "value": "ReadOnly"
           },
           "lun": {
-            "value": "parameters('source').lun"
+            "value": "[parameters('source').lun]"
           },
           "ManagedDiskId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Compute/disks',parameters('source').name)]"
