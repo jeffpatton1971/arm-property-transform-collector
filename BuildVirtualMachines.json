@@ -19,7 +19,120 @@
     }
   },
   "variables": {
-    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/collector.json')]"
+    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/collector.json')]",
+    "computeUri": "[concat(parameters('BuildUri'),'/compute-virtualMachines/')]",
+    "disksUri": "[concat(parameters('BuildUri'),'/compute-disks/')]",
+    "nicUri": "[concat(parameters('BuildUri'),'/network-networkInterfaces/')]",
+    "avsetUri": "[concat(parameters('BuildUri'),'/compute-availabilitySets/')]",
+    "osDisk": {
+      "p4": {
+        "size": 32,
+        "sku": "Premium_LRS"
+      },
+      "p6": {
+        "size": 64,
+        "sku": "Premium_LRS"
+      },
+      "p10": {
+        "size": 128,
+        "sku": "Premium_LRS"
+      },
+      "p15": {
+        "size": 256,
+        "sku": "Premium_LRS"
+      },
+      "p20": {
+        "size": 512,
+        "sku": "Premium_LRS"
+      },
+      "p30": {
+        "size": 1024,
+        "sku": "Premium_LRS"
+      },
+      "p40": {
+        "size": 2048,
+        "sku": "Premium_LRS"
+      },
+      "p50": {
+        "size": 4096,
+        "sku": "Premium_LRS"
+      },
+      "s4": {
+        "size": 32,
+        "sku": "Standard_LRS"
+      },
+      "s6": {
+        "size": 64,
+        "sku": "Standard_LRS"
+      },
+      "s10": {
+        "size": 128,
+        "sku": "Standard_LRS"
+      },
+      "s15": {
+        "size": 256,
+        "sku": "Standard_LRS"
+      },
+      "s20": {
+        "size": 512,
+        "sku": "Standard_LRS"
+      },
+      "s30": {
+        "size": 1024,
+        "sku": "Standard_LRS"
+      },
+      "s40": {
+        "size": 2048,
+        "sku": "Standard_LRS"
+      },
+      "s50": {
+        "size": 4096,
+        "sku": "Standard_LRS"
+      }
+    },
+    "OS": {
+      "Windows Server 2012 R2": {
+        "imagePublisher": "MicrosoftWindowsServer",
+        "imageOffer": "WindowsServer",
+        "imageSKU": "2012-R2-Datacenter",
+        "version": "latest",
+        "type": "windows"
+      },
+      "Windows Server 2016 DataCenter": {
+        "imagePublisher": "MicrosoftWindowsServer",
+        "imageOffer": "WindowsServer",
+        "imageSKU": "2016-Datacenter",
+        "version": "latest",
+        "type": "windows"
+      }
+    },
+    "regions": {
+      "southcentralus": {
+        "location": "southcentralus",
+        "abbreviation": "scu",
+        "timezone": "Central Standard Time"
+      },
+      "eastus": {
+        "location": "eastus",
+        "abbreviation": "eus",
+        "timezone": "Eastern Standard Time"
+      },
+      "eastus2": {
+        "location": "eastus2",
+        "abbreviation": "eus",
+        "timezone": "Eastern Standard Time"
+      },
+      "westus": {
+        "location": "westus",
+        "abbreviation": "wus",
+        "timezone": "Pacific Standard Time"
+      },
+      "westus2": {
+        "location": "westus2",
+        "abbreviation": "wus",
+        "timezone": "Pacific Standard Time"
+      }
+    }
   },
   "resources": [
     {
@@ -72,11 +185,13 @@
       "name": "BuildOsDisk",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
-      "dependsOn": [],
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','BuildOsDiskReference')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('disksUri'), '/disks.json', parameters('SasToken'))]",
+          "uri": "[concat(variables('disksUri'), '/disks.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -103,12 +218,11 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
       "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/','BuildOsDiskReference')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('computeUri'), '/osDisk.json', parameters('SasToken'))]",
+          "uri": "[concat(variables('computeUri'), '/osDisk.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -135,7 +249,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/imageReference.json')]",
+          "uri": "[concat(variables('computeUri'),'/imageReference.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -169,7 +283,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/storageProfile.json')]",
+          "uri": "[concat(variables('computeUri'),'/storageProfile.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -177,7 +291,7 @@
             "value": "[reference('BuildImageReference').outputs.imageReference.value]"
           },
           "osDisk": {
-            "value": "[reference('BuildOsDisk').outputs.osDisk.value]"
+            "value": "[reference('BuildOsDiskReference').outputs.osDisk.value]"
           },
           "dataDisks": {
             "value": "[reference('DataDiskReferenceCollector').outputs.result.value]"
@@ -193,7 +307,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/windowsConfiguration.json')]",
+          "uri": "[concat(variables('computeUri'),'/windowsConfiguration.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -210,7 +324,7 @@
             "value": true
           },
           "timeZone": {
-            "value": "[variables('timeZone')]"
+            "value": "[variables('regions')[resourceGroup().location].timezone]"
           }
         }
       }
@@ -225,7 +339,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/osProfile.json')]",
+          "uri": "[concat(variables('computeUri'),'/osProfile.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -261,12 +375,12 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/ipConfigurations.json')]",
+          "uri": "[concat(variables('nicUri'),'/ipConfigurations.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
           "name": {
-            "value": "[concat(variables('interfaceName'),'ipc')]"
+            "value": "[concat(parameters('virtualMachine').name,'-ipc')]"
           },
           "subnet": {
             "value": "[variables('subnetId')]"
@@ -285,12 +399,12 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/networkInterfaces.json')]",
+          "uri": "[concat(variables('nicUri'),'/networkInterfaces.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
           "name": {
-            "value": "[variables('interfaceName')]"
+            "value": "[concat(parameters('virtualMachine').name,'-nic')]"
           },
           "ipConfigurations": {
             "value": "[createarray(reference('BuildIpConfigurations').outputs.ipConfigurations.value)]"
@@ -311,12 +425,12 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/networkInterfaces.json')]",
+          "uri": "[concat(variables('computeUri'),'/networkInterfaces.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
           "id": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',variables('interfaceName'))]"
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('virtualMachine').name,'-nic'))]"
           },
           "primary": {
             "value": true
@@ -334,7 +448,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/networkProfile.json')]",
+          "uri": "[concat(variables('computeUri'),'/networkProfile.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -352,7 +466,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/availabilitySets.json')]",
+          "uri": "[concat(variables('avsetUri'),'/availabilitySets.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -381,7 +495,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/properties.json')]",
+          "uri": "[concat(variables('computeUri'),'/properties.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
@@ -427,7 +541,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('BuildUri'),'/virtualMachines.json')]",
+          "uri": "[concat(variables('computeUri'),'/virtualMachines.json')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
