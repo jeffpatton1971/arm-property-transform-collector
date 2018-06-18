@@ -23,7 +23,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "loop-0",
+      "name": "[concat(resourceGroup().name,'-loop-0')]",
       "properties": {
         "mode": "Incremental",
         "parameters": {},
@@ -45,7 +45,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "[concat('loop-', copyindex(1))]",
+      "name": "[concat(resourceGroup().name,'-loop-', copyindex(1))]",
       "copy": {
         "name": "iterator",
         "count": "[variables('count')]",
