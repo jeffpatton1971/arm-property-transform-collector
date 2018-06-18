@@ -22,7 +22,7 @@
     }
   },
   "variables": {
-    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/collector.json')]",
+    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'))]",
     "computeUri": "[concat(parameters('BuildUri'),'/compute-virtualMachines/build/')]",
     "disksUri": "[concat(parameters('BuildUri'),'/compute-disks/build/')]",
     "nicUri": "[concat(parameters('BuildUri'),'/network-networkInterfaces/build/')]",
@@ -151,7 +151,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('collectorTemplateUri')]",
+          "uri": "[concat(variables('collectorTemplateUri'),'/collector-dataDisksReference.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -174,7 +174,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('collectorTemplateUri')]",
+          "uri": "[concat(variables('collectorTemplateUri'),'/collector-dataDisks.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
