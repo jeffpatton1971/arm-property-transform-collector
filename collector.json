@@ -64,7 +64,7 @@
             "value": "[parameters('source')[copyindex()]]"
           },
           "state": {
-            "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]"
+            "value": "[reference(concat(resourceGroup().name,'-loop-', copyindex())).outputs.collection.value]"
           },
           "BuildUri": {
             "value": "[parameters('BuildUri')]"
@@ -76,7 +76,7 @@
   "outputs": {
     "result": {
       "type": "array",
-      "value": "[reference(concat('loop-', variables('count'))).outputs.collection.value]"
+      "value": "[reference(concat(resourceGroup().name,'-loop-', variables('count'))).outputs.collection.value]"
     }
   }
 }
