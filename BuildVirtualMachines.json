@@ -22,7 +22,7 @@
     }
   },
   "variables": {
-    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'))]",
+    "collectorTemplateUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/collector.json')]",
     "computeUri": "[concat(parameters('BuildUri'),'/compute-virtualMachines/build/')]",
     "disksUri": "[concat(parameters('BuildUri'),'/compute-disks/build/')]",
     "nicUri": "[concat(parameters('BuildUri'),'/network-networkInterfaces/build/')]",
@@ -148,10 +148,11 @@
       "apiVersion": "2015-01-01",
       "name": "DataDiskReferenceCollector",
       "type": "Microsoft.Resources/deployments",
+      "dependsOn": [ ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('collectorTemplateUri'),'/collector-dataDisksReference.json')]",
+          "uri": "[variables('collectorTemplateUri')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -171,10 +172,13 @@
       "apiVersion": "2015-01-01",
       "name": "DataDiskCollector",
       "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','DataDiskReferenceCollector')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('collectorTemplateUri'),'/collector-dataDisks.json')]",
+          "uri": "[variables('collectorTemplateUri')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
