@@ -14,35 +14,106 @@
     }
   },
   "variables": {
-    "BuildTemplateUri": "[concat(parameters('BuildUri'),'/subnet.json')]"
+    "BuildTemplateUri": "[concat(parameters('BuildUri'),'/dataDisks.json')]",
+    "Disk": {
+      "p4": {
+        "size": 32,
+        "sku": "Premium_LRS"
+      },
+      "p6": {
+        "size": 64,
+        "sku": "Premium_LRS"
+      },
+      "p10": {
+        "size": 128,
+        "sku": "Premium_LRS"
+      },
+      "p15": {
+        "size": 256,
+        "sku": "Premium_LRS"
+      },
+      "p20": {
+        "size": 512,
+        "sku": "Premium_LRS"
+      },
+      "p30": {
+        "size": 1024,
+        "sku": "Premium_LRS"
+      },
+      "p40": {
+        "size": 2048,
+        "sku": "Premium_LRS"
+      },
+      "p50": {
+        "size": 4096,
+        "sku": "Premium_LRS"
+      },
+      "s4": {
+        "size": 32,
+        "sku": "Standard_LRS"
+      },
+      "s6": {
+        "size": 64,
+        "sku": "Standard_LRS"
+      },
+      "s10": {
+        "size": 128,
+        "sku": "Standard_LRS"
+      },
+      "s15": {
+        "size": 256,
+        "sku": "Standard_LRS"
+      },
+      "s20": {
+        "size": 512,
+        "sku": "Standard_LRS"
+      },
+      "s30": {
+        "size": 1024,
+        "sku": "Standard_LRS"
+      },
+      "s40": {
+        "size": 2048,
+        "sku": "Standard_LRS"
+      },
+      "s50": {
+        "size": 4096,
+        "sku": "Standard_LRS"
+      }
+    }
   },
   "resources": [
     {
       "name": "BuildDataDisk",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
-      "dependsOn": [],
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/','CreateDataDisk')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('disksUri'), '/disks.json', parameters('SasToken'))]",
+          "uri": "[variables('BuildTemplateUri')]",
           "contentVersion": "2017.09.01.0"
         },
         "parameters": {
           "name": {
             "value": "[parameters('source').name]"
           },
-          "createOption": {
-            "value": "Empty"
-          },
           "diskSizeGB": {
-            "value": "[variables('disk').size]"
+            "value": "[variables('Disk').size]"
           },
-          "sku": {
-            "value": "[variables('disk').sku]"
+          "caching": {
+            "value": "ReadOnly"
           },
-          "tags": {
-            "value": {}
+          "lun": {
+            "value": "parameters('source').lun"
+          },
+          "ManagedDiskId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Compute/disks',parameters('source').name)]"
+          },
+          "createOption": {
+            "value": "Attach"
           }
         }
       }
@@ -51,7 +122,7 @@
   "outputs": {
     "collection": {
       "type": "array",
-      "value": "[concat(parameters('state'), createArray(reference('BuildDataDisk').outputs.disks.value))]"
+      "value": "[concat(parameters('state'), createArray(reference('BuildDataDisk').outputs.dataDisks.value))]"
     }
   }
 }

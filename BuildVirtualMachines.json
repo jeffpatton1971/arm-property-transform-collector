@@ -5,6 +5,9 @@
     "virtualMachine": {
       "type": "object"
     },
+    "Password": {
+      "type": "securestring"
+    },
     "BuildUri": {
       "type": "string"
     },
@@ -24,7 +27,7 @@
     "disksUri": "[concat(parameters('BuildUri'),'/compute-disks/')]",
     "nicUri": "[concat(parameters('BuildUri'),'/network-networkInterfaces/')]",
     "avsetUri": "[concat(parameters('BuildUri'),'/compute-availabilitySets/')]",
-    "osDisk": {
+    "Disk": {
       "p4": {
         "size": 32,
         "sku": "Premium_LRS"
@@ -132,7 +135,13 @@
         "abbreviation": "wus",
         "timezone": "Pacific Standard Time"
       }
-    }
+    },
+    "vmSize": "[concat('Standard_',parameters('virtualMachine').Size)]",
+    "netArray": "[split(parameters('virtualMachine').subnet,',')]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('netArray')[0])]",
+    "subnetId": "[concat(variables('vnetID'),'/subnets/',variables('netArray')[1])]",
+    "AdminUsername": "rack-adm",
+    "AdminPassword": "[parameters('Password')]"
   },
   "resources": [
     {
@@ -153,7 +162,7 @@
             "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-dataDisksReference.json')]"
           },
           "BuildUri": {
-            "value": "[parameters('BuildUri')]"
+            "value": "[variables('computeUri')]"
           }
         }
       }
@@ -176,7 +185,7 @@
             "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-dataDisks.json')]"
           },
           "BuildUri": {
-            "value": "[parameters('BuildUri')]"
+            "value": "[variables('disksUri')]"
           }
         }
       }
@@ -202,10 +211,10 @@
             "value": "Empty"
           },
           "diskSizeGB": {
-            "value": "[variables('osDisk').size]"
+            "value": "[variables('Disk').size]"
           },
           "sku": {
-            "value": "[variables('osDisk').sku]"
+            "value": "[variables('Disk').sku]"
           },
           "tags": {
             "value": "[json('{\"TagName\": \"TagValue\"}')]"

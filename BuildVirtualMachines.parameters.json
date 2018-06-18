@@ -10,7 +10,7 @@
           "vmSize": "DS13_v2",
           "operatingSystem": "Windows Server 2016",
           "availabilitySet": "qa-fmssql-avset",
-          "subnet": "azure-qafmsinside",
+          "subnet": "eus-vnet01,azure-qafmsinside",
           "osDisk": {
             "name": "qafmssql2-os.vhd",
             "size": "p10"
@@ -34,7 +34,7 @@
           "vmSize": "F1",
           "operatingSystem": "Windows Server 2016",
           "availabilitySet": "qafmssqlw-avset",
-          "subnet": "azure-qafmsinside",
+          "subnet": "eus-vnet01,azure-qafmsinside",
           "osDisk": {
             "name": "qafmssqlw-os.vhd",
             "size": "P10"
