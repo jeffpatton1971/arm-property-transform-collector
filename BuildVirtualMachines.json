@@ -267,7 +267,7 @@
         },
         "parameters": {
           "id": {
-            "value": "parameters('virtualMachine').imageReferenceId"
+            "value": "[parameters('virtualMachine').imageReferenceId]"
           },
           "publisher": {
             "value": "[concat(variables('OS')[parameters('virtualMachine').operatingSystem].imagePublisher)]"
