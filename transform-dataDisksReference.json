@@ -87,9 +87,7 @@
       "name": "BuildDataDisk",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/','CreateDataDisk')]"
-      ],
+      "dependsOn": [],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
