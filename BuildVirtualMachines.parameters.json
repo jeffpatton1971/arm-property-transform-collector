@@ -22,7 +22,7 @@
           },
           {
             "name": "qafmssql2-datadisk-002.vhd",
-            "lun": 0,
+            "lun": 1,
             "size": "p30"
           }
         ]
