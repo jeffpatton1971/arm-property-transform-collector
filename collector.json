@@ -52,7 +52,7 @@
         "mode": "serial"
       },
       "dependsOn": [
-        "loop-0"
+        "[concat(resourceGroup().name,'-loop-0')]"
       ],
       "properties": {
         "mode": "Incremental",
