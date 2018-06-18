@@ -37,15 +37,15 @@
         "sku": "Premium_LRS"
       },
       "p30": {
-        "size": 1024,
+        "size": 1023,
         "sku": "Premium_LRS"
       },
       "p40": {
-        "size": 2048,
+        "size": 2047,
         "sku": "Premium_LRS"
       },
       "p50": {
-        "size": 4096,
+        "size": 4095,
         "sku": "Premium_LRS"
       },
       "s4": {
@@ -69,15 +69,15 @@
         "sku": "Standard_LRS"
       },
       "s30": {
-        "size": 1024,
+        "size": 1023,
         "sku": "Standard_LRS"
       },
       "s40": {
-        "size": 2048,
+        "size": 2047,
         "sku": "Standard_LRS"
       },
       "s50": {
-        "size": 4096,
+        "size": 4095,
         "sku": "Standard_LRS"
       }
     }
