@@ -11,6 +11,10 @@
     },
     "BuildUri": {
       "type": "string"
+    },
+    "DependsOn": {
+      "type": "array",
+      "defaultValue": []
     }
   },
   "variables": {
@@ -106,6 +110,9 @@
           },
           "sku": {
             "value": "[variables('Disk')[parameters('source').size].sku]"
+          },
+          "DependsOn": {
+            "value": "[parameters('DependsOn')]"
           },
           "tags": {
             "value": {}

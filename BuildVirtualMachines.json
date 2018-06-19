@@ -138,7 +138,7 @@
     },
     "vmSize": "[concat('Standard_',parameters('virtualMachine').vmSize)]",
     "netArray": "[split(parameters('virtualMachine').subnet,',')]",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('netArray')[0])]",
+    "vnetID": "[resourceId(variables('netArray')[0],'Microsoft.Network/virtualNetworks',variables('netArray')[1])]",
     "subnetId": "[concat(variables('vnetID'),'/subnets/',variables('netArray')[1])]",
     "AdminUsername": "rack-adm",
     "AdminPassword": "[parameters('Password')]"
@@ -148,7 +148,7 @@
       "apiVersion": "2015-01-01",
       "name": "DataDiskReferenceCollector",
       "type": "Microsoft.Resources/deployments",
-      "dependsOn": [ ],
+      "dependsOn": [],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -190,6 +190,9 @@
           },
           "BuildUri": {
             "value": "[variables('disksUri')]"
+          },
+          "DependsOn": {
+            "value": "[createArray(parameters('virtualMachine').name)]"
           }
         }
       }
@@ -307,7 +310,7 @@
             "value": "[reference('BuildOsDiskReference').outputs.osDisk.value]"
           },
           "dataDisks": {
-            "value": "[reference('DataDiskReferenceCollector').outputs.result.value]"
+            "value": "[if(empty(parameters('virtualMachine').dataDisks),json('null'),reference('DataDiskReferenceCollector').outputs.result.value)]"
           }
         }
       }
@@ -421,6 +424,9 @@
           },
           "ipConfigurations": {
             "value": "[createarray(reference('BuildIpConfigurations').outputs.ipConfigurations.value)]"
+          },
+          "DependsOn": {
+            "value": "[createArray(parameters('virtualMachine').availabilitySet)]"
           },
           "tags": {
             "value": {}
@@ -560,6 +566,9 @@
         "parameters": {
           "name": {
             "value": "[parameters('virtualMachine').name]"
+          },
+          "DependsOn": {
+            "value": "[createArray(concat(parameters('virtualMachine').name,'-nic'),parameters('virtualMachine').osDisk.name)]"
           },
           "tags": {
             "value": "[json('{\"TagName\": \"TagValue\"}')]"

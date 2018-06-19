@@ -4,25 +4,25 @@
   "parameters": {
     "virtualMachine": {
       "value": {
-        "name": "qafmssql2",
-        "ResourceGroup": "eus-qa-fmssql",
+        "name": "sql-vm-01",
+        "ResourceGroup": "sql-rsg",
         "vmSize": "DS13_v2",
         "operatingSystem": "Windows Server 2016 DataCenter",
         "imageReferenceId": "",
-        "availabilitySet": "qa-fmssql-avset",
-        "subnet": "eus-vnet01,azure-qafmsinside",
+        "availabilitySet": "sql-avset",
+        "subnet": "vnet-rsg,azure-vnet01,azure-subnet",
         "osDisk": {
-          "name": "qafmssql2-os.vhd",
+          "name": "sql-vm-01-os.vhd",
           "size": "p10"
         },
         "dataDisks": [
           {
-            "name": "qafmssql2-datadisk-001.vhd",
+            "name": "sql-vm-01-datadisk-001.vhd",
             "lun": 0,
             "size": "p30"
           },
           {
-            "name": "qafmssql2-datadisk-002.vhd",
+            "name": "sql-vm-01-datadisk-002.vhd",
             "lun": 1,
             "size": "p30"
           }

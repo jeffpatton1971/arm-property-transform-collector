@@ -11,6 +11,10 @@
     },
     "BuildUri": {
       "type": "string"
+    },
+    "DependsOn": {
+      "type": "array",
+      "defaultValue": []
     }
   },
   "variables": {
