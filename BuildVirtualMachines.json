@@ -198,35 +198,6 @@
       }
     },
     {
-      "apiVersion": "2015-01-01",
-      "name": "DataDiskNameArray",
-      "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/','DataDiskReferenceCollector')]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('collectorTemplateUri')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "source": {
-            "value": "[parameters('virtualMachine').dataDisks]"
-          },
-          "transformTemplateUri": {
-            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-stringarray.json')]"
-          },
-          "BuildUri": {
-            "value": "[variables('disksUri')]"
-          },
-          "DependsOn": {
-            "value": "[createArray(parameters('virtualMachine').osDisk.name)]"
-          }
-        }
-      }
-    },
-    {
       "name": "BuildOsDisk",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
