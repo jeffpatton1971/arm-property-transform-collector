@@ -25,15 +25,6 @@
           "transformTemplateUri": { "value": "https://raw.githubusercontent.com/jeffpatton1971/arm-property-transform-collector/strings/transform.json" }
         }
       }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "networkSecurityGroup1",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "securityRules": "[reference('collector').outputs.result.value]"
-      }
     }
   ],
   "outputs": {
