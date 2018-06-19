@@ -472,7 +472,7 @@
         },
         "parameters": {
           "networkInterfaces": {
-            "value": "[createarray(reference('BuildNetworkInterface').outputs.networkInterfaces.value)]"
+            "value": "[createarray(reference('BuildNetworkInterfaceId').outputs.networkInterfaces.value)]"
           }
         }
       }
