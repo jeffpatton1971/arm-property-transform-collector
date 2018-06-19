@@ -192,7 +192,7 @@
             "value": "[variables('disksUri')]"
           },
           "DependsOn": {
-            "value": "[createArray(parameters('virtualMachine').name)]"
+            "value": "[createArray(parameters('virtualMachine').osDisk.name)]"
           }
         }
       }
@@ -564,7 +564,7 @@
             "value": "[parameters('virtualMachine').name]"
           },
           "DependsOn": {
-            "value": "[createArray(concat(parameters('virtualMachine').name,'-nic'),parameters('virtualMachine').osDisk.name,'DataDisks')]"
+            "value": "[createArray(concat(parameters('virtualMachine').name,'-nic'),parameters('virtualMachine').osDisk.name)]"
           },
           "tags": {
             "value": "[json('{\"TagName\": \"TagValue\"}')]"
@@ -590,7 +590,7 @@
         "contentVersion": "1.0.0.0",
         "parameters": {},
         "variables": {},
-        "resources": "[concat(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value,reference('DataDiskCollector').outputs.result.value,reference('BuildVirtualMachine').outputs.virtualMachine.value)]",
+        "resources": "[concat(createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value),reference('DataDiskCollector').outputs.result.value,createArray(reference('BuildVirtualMachine').outputs.virtualMachine.value))]",
         "outputs": {}
       }
     }
