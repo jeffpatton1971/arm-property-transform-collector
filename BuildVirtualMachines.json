@@ -523,16 +523,12 @@
           },
           "availabilitySet": {
             "value": {
-              "id": {
-                "value": "[resourceId(resourceGroup().name,'Microsoft.Compute/availabilitySets',parameters('virtualMachine').availabilitySet)]"
-              }
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Compute/availabilitySets',parameters('virtualMachine').availabilitySet)]"
             }
           },
           "hardwareProfile": {
             "value": {
-              "vmSize": {
-                "value": "[variables('vmSize')]"
-              }
+              "vmSize": "[variables('vmSize')]"
             }
           },
           "storageProfile": {
@@ -568,7 +564,7 @@
             "value": "[parameters('virtualMachine').name]"
           },
           "DependsOn": {
-            "value": "[createArray(concat(parameters('virtualMachine').name,'-nic'),parameters('virtualMachine').osDisk.name)]"
+            "value": "[createArray(concat(parameters('virtualMachine').name,'-nic'),parameters('virtualMachine').osDisk.name,'DataDisks')]"
           },
           "tags": {
             "value": "[json('{\"TagName\": \"TagValue\"}')]"
@@ -580,7 +576,7 @@
             "value": "[reference('BuildProperties').outputs.properties.value]"
           },
           "resources": {
-            "value": "[reference('DataDiskCollector').outputs.result.value]"
+            "value": []
           }
         }
       }
@@ -594,7 +590,7 @@
         "contentVersion": "1.0.0.0",
         "parameters": {},
         "variables": {},
-        "resources": "[createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value,reference('BuildVirtualMachine').outputs.virtualMachine.value)]",
+        "resources": "[concat(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value,reference('DataDiskCollector').outputs.result.value,reference('BuildVirtualMachine').outputs.virtualMachine.value)]",
         "outputs": {}
       }
     }
