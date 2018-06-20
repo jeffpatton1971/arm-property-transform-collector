@@ -7,7 +7,7 @@
         "name": "sql-vm-01",
         "ResourceGroup": "sql-rsg",
         "vmSize": "DS13_v2",
-        "operatingSystem": "Windows Server 2016 DataCenter",
+        "operatingSystem": "CentOS 6.8 Latest",
         "imageReferenceId": "",
         "availabilitySet": "sql-avset",
         "subnet": "wb-azr-01,wb-azr-01,default",
