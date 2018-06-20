@@ -10,7 +10,7 @@
         "operatingSystem": "Windows Server 2016 DataCenter",
         "imageReferenceId": "",
         "availabilitySet": "sql-avset",
-        "subnet": "vnet-rsg,azure-vnet01,azure-subnet",
+        "subnet": "wb-azr-01,wb-azr-01,default",
         "osDisk": {
           "name": "sql-vm-01-os.vhd",
           "size": "p10"
@@ -19,12 +19,17 @@
           {
             "name": "sql-vm-01-datadisk-001.vhd",
             "lun": 0,
-            "size": "p30"
+            "size": "p10"
           },
           {
             "name": "sql-vm-01-datadisk-002.vhd",
             "lun": 1,
             "size": "p30"
+          },
+          {
+            "name": "sql-vm-01-datadisk-003.vhd",
+            "lun": 2,
+            "size": "s6"
           }
         ]
       }
