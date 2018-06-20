@@ -107,6 +107,20 @@
         "imageSKU": "2016-Datacenter",
         "version": "latest",
         "type": "windows"
+      },
+      "CentOS 6.8 Latest": {
+        "imagePublisher": "OpenLogic",
+        "imageOffer": "CentOS",
+        "imageSKU": "6.8",
+        "version": "latest",
+        "type": "linux"
+      },
+      "RedHat 6.8 Latest": {
+        "imagePublisher": "RedHat",
+        "imageOffer": "RHEL",
+        "imageSKU": "6.8",
+        "version": "latest",
+        "type": "linux"
       }
     },
     "regions": {
@@ -141,11 +155,16 @@
     "vnetID": "[resourceId(variables('netArray')[0],'Microsoft.Network/virtualNetworks',variables('netArray')[1])]",
     "subnetId": "[concat(variables('vnetID'),'/subnets/',variables('netArray')[2])]",
     "AdminUsername": "rack-adm",
-    "AdminPassword": "[parameters('Password')]"
+    "AdminPassword": "[parameters('Password')]",
+    "empty": {
+      "array": [],
+      "object": {}
+    }
   },
   "resources": [
     {
-      "apiVersion": "2015-01-01",
+      "condition": "[greater(length(parameters('virtualMachine').dataDisks), 0)]",
+      "apiVersion": "2017-05-10",
       "name": "DataDiskReferenceCollector",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [],
@@ -169,7 +188,8 @@
       }
     },
     {
-      "apiVersion": "2015-01-01",
+      "condition": "[greater(length(parameters('virtualMachine').dataDisks), 0)]",
+      "apiVersion": "2017-05-10",
       "name": "DataDiskCollector",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
@@ -198,7 +218,8 @@
       }
     },
     {
-      "apiVersion": "2015-01-01",
+      "condition": "[greater(length(parameters('virtualMachine').dataDisks), 0)]",
+      "apiVersion": "2017-05-10",
       "name": "DataDiskNameArray",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [ "[concat('Microsoft.Resources/deployments/','DataDiskCollector')]" ],
@@ -285,7 +306,7 @@
     {
       "name": "BuildStorageProfile",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2016-09-01",
+      "apiVersion": "2017-05-10",
       "dependsOn": [
         "[concat('Microsoft.Resources/deployments/','BuildImageReference')]",
         "[concat('Microsoft.Resources/deployments/','BuildOsDiskReference')]",
@@ -305,7 +326,7 @@
             "value": "[reference('BuildOsDiskReference').outputs.osDisk.value]"
           },
           "dataDisks": {
-            "value": "[if(empty(parameters('virtualMachine').dataDisks),json('null'),reference('DataDiskReferenceCollector').outputs.result.value)]"
+            "value": "[if(greater(length(parameters('virtualMachine').dataDisks), 0),reference('DataDiskReferenceCollector').outputs.result.value,variables('empty').array)]"
           }
         }
       }
@@ -313,7 +334,8 @@
     {
       "name": "DefineWindowsConfiguration",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2016-09-01",
+      "condition": "[equals(variables('OS')[parameters('virtualMachine').operatingSystem].type,'windows')]",
+      "apiVersion": "2017-05-10",
       "dependsOn": [],
       "properties": {
         "mode": "Incremental",
@@ -341,11 +363,33 @@
       }
     },
     {
+      "name": "DefineLinuxConfiguration",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[equals(variables('OS')[parameters('virtualMachine').operatingSystem].type,'linux')]",
+      "apiVersion": "2017-05-10",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('computeUri'),'/linuxConfiguration.json')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "disablePasswordAuthentication": {
+            "value": false
+          },
+          "ssh": {
+            "value": []
+          }
+        }
+      }
+    },
+    {
       "name": "BuildOsProfile",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
       "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/','DefineWindowsConfiguration')]"
+        "[concat('Microsoft.Resources/deployments/','BuildStorageProfile')]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -367,10 +411,10 @@
             "value": ""
           },
           "windowsConfiguration": {
-            "value": "[reference('DefineWindowsConfiguration').outputs.windowsConfiguration.value]"
+            "value": "[if(equals(variables('OS')[parameters('virtualMachine').operatingSystem].type,'windows'),reference('DefineWindowsConfiguration').outputs.windowsConfiguration.value,variables('empty').object)]"
           },
           "linuxConfiguration": {
-            "value": {}
+            "value": "[if(equals(variables('OS')[parameters('virtualMachine').operatingSystem].type,'linux'),reference('DefineLinuxConfiguration').outputs.linuxConfiguration.value,variables('empty').object)]"
           },
           "secrets": {
             "value": {}
@@ -399,7 +443,6 @@
         }
       }
     },
-
     {
       "name": "BuildNetworkInterface",
       "type": "Microsoft.Resources/deployments",
@@ -559,7 +602,7 @@
             "value": "[parameters('virtualMachine').name]"
           },
           "DependsOn": {
-            "value": "[concat(reference('DataDiskNameArray').outputs.result.value,createArray(concat(parameters('virtualMachine').name,'-nic')))]"
+            "value": "[if(greater(length(parameters('virtualMachine').dataDisks), 0),concat(reference('DataDiskNameArray').outputs.result.value,createArray(concat(parameters('virtualMachine').name,'-nic'))),createArray(concat(parameters('virtualMachine').name,'-nic')))]"
           },
           "tags": {
             "value": "[json('{\"TagName\": \"TagValue\"}')]"
@@ -585,7 +628,7 @@
         "contentVersion": "1.0.0.0",
         "parameters": {},
         "variables": {},
-        "resources": "[concat(createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value),reference('DataDiskCollector').outputs.result.value,createArray(reference('BuildVirtualMachine').outputs.virtualMachine.value))]",
+        "resources": "[if(greater(length(parameters('virtualMachine').dataDisks), 0),concat(createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value),reference('DataDiskCollector').outputs.result.value,createArray(reference('BuildVirtualMachine').outputs.virtualMachine.value)),concat(createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value),createArray(reference('BuildVirtualMachine').outputs.virtualMachine.value)))]",
         "outputs": {}
       }
     }
