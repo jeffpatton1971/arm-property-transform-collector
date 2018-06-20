@@ -139,7 +139,7 @@
     "vmSize": "[concat('Standard_',parameters('virtualMachine').vmSize)]",
     "netArray": "[split(parameters('virtualMachine').subnet,',')]",
     "vnetID": "[resourceId(variables('netArray')[0],'Microsoft.Network/virtualNetworks',variables('netArray')[1])]",
-    "subnetId": "[concat(variables('vnetID'),'/subnets/',variables('netArray')[1])]",
+    "subnetId": "[concat(variables('vnetID'),'/subnets/',variables('netArray')[2])]",
     "AdminUsername": "rack-adm",
     "AdminPassword": "[parameters('Password')]"
   },
@@ -192,39 +192,34 @@
             "value": "[variables('disksUri')]"
           },
           "DependsOn": {
-            "value": "[createArray(parameters('virtualMachine').osDisk.name)]"
+            "value": []
           }
         }
       }
     },
     {
-      "name": "BuildOsDisk",
+      "apiVersion": "2015-01-01",
+      "name": "DataDiskNameArray",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2016-09-01",
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/','BuildOsDiskReference')]"
-      ],
+      "dependsOn": [ "[concat('Microsoft.Resources/deployments/','DataDiskCollector')]" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('disksUri'), '/disks.json')]",
-          "contentVersion": "2017.09.01.0"
+          "uri": "[variables('collectorTemplateUri')]",
+          "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "name": {
-            "value": "[parameters('virtualMachine').osDisk.name]"
+          "source": {
+            "value": "[parameters('virtualMachine').dataDisks]"
           },
-          "createOption": {
-            "value": "Empty"
+          "transformTemplateUri": {
+            "value": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/transform-stringarray.json')]"
           },
-          "diskSizeGB": {
-            "value": "[variables('Disk')[parameters('virtualMachine').osDisk.size].size]"
+          "BuildUri": {
+            "value": "[variables('disksUri')]"
           },
-          "sku": {
-            "value": "[variables('Disk')[parameters('virtualMachine').osDisk.size].sku]"
-          },
-          "tags": {
-            "value": "[json('{\"TagName\": \"TagValue\"}')]"
+          "DependsOn": {
+            "value": "[createArray(parameters('virtualMachine').osDisk.name)]"
           }
         }
       }
@@ -564,7 +559,7 @@
             "value": "[parameters('virtualMachine').name]"
           },
           "DependsOn": {
-            "value": "[concat(reference('DataDiskNameArray').outputs.result.value,createArray(concat(parameters('virtualMachine').name,'-nic'),parameters('virtualMachine').osDisk.name))]"
+            "value": "[concat(reference('DataDiskNameArray').outputs.result.value,createArray(concat(parameters('virtualMachine').name,'-nic')))]"
           },
           "tags": {
             "value": "[json('{\"TagName\": \"TagValue\"}')]"
@@ -590,7 +585,7 @@
         "contentVersion": "1.0.0.0",
         "parameters": {},
         "variables": {},
-        "resources": "[concat(createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value,reference('BuildOsDisk').outputs.disks.value),reference('DataDiskCollector').outputs.result.value,createArray(reference('BuildVirtualMachine').outputs.virtualMachine.value))]",
+        "resources": "[concat(createArray(reference('BuildAvailabilitySet').outputs.availabilitySets.value,reference('BuildNetworkInterface').outputs.networkInterfaces.value),reference('DataDiskCollector').outputs.result.value,createArray(reference('BuildVirtualMachine').outputs.virtualMachine.value))]",
         "outputs": {}
       }
     }
